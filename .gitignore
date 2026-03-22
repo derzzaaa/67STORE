@@ -1,0 +1,16 @@
+# Environment variables
+.env
+
+# Docker data volumes
+db_data/
+mysql_data/
+*.sql.gz
+
+# IDE / Editor
+.idea/
+.vscode/
+*.swp
+
+# OS generated files
+.DS_Store
+Thumbs.db
