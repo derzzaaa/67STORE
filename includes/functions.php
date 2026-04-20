@@ -399,3 +399,144 @@ function getTimeRemaining($endTime) {
     
     return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
 }
+
+// ============================================================
+// ORDER FUNCTIONS
+// ============================================================
+
+/**
+ * Получить заказы пользователя
+ */
+function getUserOrders($userId) {
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC");
+    $stmt->execute([$userId]);
+    return $stmt->fetchAll();
+}
+
+/**
+ * Получить позиции заказа
+ */
+function getOrderItems($orderId) {
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT oi.*, p.image FROM order_items oi 
+                           LEFT JOIN products p ON oi.product_id = p.id 
+                           WHERE oi.order_id = ?");
+    $stmt->execute([$orderId]);
+    return $stmt->fetchAll();
+}
+
+/**
+ * Получить заказ по ID (с проверкой пользователя)
+ */
+function getOrderById($orderId, $userId = null) {
+    global $pdo;
+    $sql = "SELECT * FROM orders WHERE id = ?";
+    $params = [$orderId];
+    
+    if ($userId !== null) {
+        $sql .= " AND user_id = ?";
+        $params[] = $userId;
+    }
+    
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetch();
+}
+
+/**
+ * Создать заказ из корзины
+ */
+function createOrder($userId, $deliveryAddress, $deliveryType, $paymentType) {
+    global $pdo;
+    
+    $cartItems = getCartItems();
+    if (empty($cartItems)) {
+        return ['success' => false, 'message' => 'Cart is empty'];
+    }
+    
+    $totals = calculateCartTotal();
+    
+    try {
+        $pdo->beginTransaction();
+        
+        // Создание заказа
+        $stmt = $pdo->prepare("INSERT INTO orders (user_id, total, subtotal, tax, delivery_fee, discount, promo_code, status, delivery_address, delivery_type, payment_type) 
+                               VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)");
+        $stmt->execute([
+            $userId,
+            $totals['total'],
+            $totals['subtotal'],
+            $totals['tax'],
+            $totals['delivery_fee'],
+            $totals['discount'],
+            $_SESSION['promo_code'] ?? null,
+            $deliveryAddress,
+            $deliveryType,
+            $paymentType
+        ]);
+        
+        $orderId = $pdo->lastInsertId();
+        
+        // Добавление позиций заказа
+        $stmt = $pdo->prepare("INSERT INTO order_items (order_id, product_id, product_name, quantity, price) VALUES (?, ?, ?, ?, ?)");
+        
+        foreach ($cartItems as $item) {
+            $stmt->execute([
+                $orderId,
+                $item['id'],
+                $item['name'],
+                $item['quantity'],
+                $item['price']
+            ]);
+        }
+        
+        $pdo->commit();
+        
+        // Очищаем корзину и промокод
+        $_SESSION['cart'] = [];
+        unset($_SESSION['promo_code']);
+        
+        return ['success' => true, 'order_id' => $orderId];
+        
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        error_log("Order creation failed: " . $e->getMessage());
+        return ['success' => false, 'message' => 'Order creation failed'];
+    }
+}
+
+/**
+ * Обновить статус оплаты заказа
+ */
+function updateOrderPaymentStatus($orderId, $status) {
+    global $pdo;
+    $stmt = $pdo->prepare("UPDATE orders SET payment_status = ?, status = CASE WHEN ? = 'paid' THEN 'processing' ELSE status END WHERE id = ?");
+    $stmt->execute([$status, $status, $orderId]);
+    return $stmt->rowCount() > 0;
+}
+
+/**
+ * Получить название статуса заказа
+ */
+function getOrderStatusLabel($status) {
+    $labels = [
+        'pending' => 'Pending',
+        'processing' => 'Processing',
+        'completed' => 'Completed',
+        'cancelled' => 'Cancelled'
+    ];
+    return $labels[$status] ?? $status;
+}
+
+/**
+ * Получить название статуса оплаты
+ */
+function getPaymentStatusLabel($status) {
+    $labels = [
+        'unpaid' => 'Unpaid',
+        'paid' => 'Paid',
+        'failed' => 'Failed'
+    ];
+    return $labels[$status] ?? $status;
+}

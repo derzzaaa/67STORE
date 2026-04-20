@@ -33,7 +33,12 @@ $suggestedProducts = getProducts(null, 5); // Для блока "Complete Your O
         <div class="cart-container">
             <!-- Левая часть: Список товаров -->
             <div class="cart-items" style="border: 2px solid #E0E0E0;">
-                <h1 class="cart-title">Your Cart (<?php echo count($cartItems); ?> items)</h1>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h1 class="cart-title" style="margin-bottom: 0;">Your Cart (<?php echo count($cartItems); ?> items)</h1>
+                    <button class="btn-remove" onclick="clearCart()" style="background: none; border: none; font-size: 14px; cursor: pointer; color: #dc3545; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-trash-alt"></i> Clear Cart
+                    </button>
+                </div>
 
                 <?php foreach ($cartItems as $item): ?>
                     <div class="cart-item">

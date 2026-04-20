@@ -23,13 +23,52 @@ if ($categorySlug) {
     }
 }
 
-$products = getProducts($categoryId, 24);
+$searchQuery = $_GET['search'] ?? null;
+$limit = 24;
+
+if ($searchQuery) {
+    global $pdo;
+    
+    // ======== ДЕМОНСТРАЦИЯ УЯЗВИМОСТИ: SQL ИНЪЕКЦИЯ ========
+    // УЯЗВИМЫЙ КОД (сейчас АКТИВЕН для демонстрации взлома)
+    // Хакер может ввести: ' OR '1'='1
+    $sql = "SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE p.name LIKE '%" . $searchQuery . "%' ORDER BY p.created_at DESC LIMIT $limit";
+    $products = $pdo->query($sql)->fetchAll();
+
+    /* БЕЗОПАСНЫЙ КОД (сейчас ЗАКОММЕНТИРОВАН, раскомментировать после демонстрации)
+    $sql = "SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE p.name LIKE ? ORDER BY p.created_at DESC LIMIT " . (int)$limit;
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['%' . $searchQuery . '%']);
+    $products = $stmt->fetchAll();
+    */
+} else {
+    $products = getProducts($categoryId, $limit);
+}
 ?>
 
 <div class="container" style="padding: 40px 0;">
-    <h1 style="font-size: 32px; margin-bottom: 24px;">
-        <?php echo $currentCategory ? e($currentCategory['name']) : t('all_deals'); ?>
-    </h1>
+    <?php if ($searchQuery): ?>
+        <h1 style="font-size: 32px; margin-bottom: 8px;">
+            Search Results
+        </h1>
+        
+        <!-- ======== ДЕМОНСТРАЦИЯ УЯЗВИМОСТИ: XSS ======== -->
+        <!-- УЯЗВИМЫЙ КОД (сейчас АКТИВЕН для демонстрации взлома) -->
+        <!-- Хакер может ввести: <script>alert('XSS')</script> -->
+        <div style="font-size: 18px; color: var(--color-gray); margin-bottom: 24px;">
+            You searched for: <strong><?php echo $searchQuery; ?></strong>
+        </div>
+        
+        <!-- БЕЗОПАСНЫЙ КОД (сейчас ЗАКОММЕНТИРОВАН, раскомментировать после демонстрации):
+        <div style="font-size: 18px; color: var(--color-gray); margin-bottom: 24px;">
+            You searched for: <strong><?php echo e($searchQuery); ?></strong>
+        </div>
+        -->
+    <?php else: ?>
+        <h1 style="font-size: 32px; margin-bottom: 24px;">
+            <?php echo $currentCategory ? e($currentCategory['name']) : t('all_deals'); ?>
+        </h1>
+    <?php endif; ?>
 
     <!-- Category Filter -->
     <div style="display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap;">

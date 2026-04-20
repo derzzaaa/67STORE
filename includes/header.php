@@ -23,7 +23,7 @@ $csrfToken = generateCsrfToken();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($pageTitle) ? $pageTitle . ' - ' : ''; ?><?php echo t('site_name'); ?></title>
-    <link rel="stylesheet" href="<?php echo url('assets/css/style.css'); ?>">
+    <link rel="stylesheet" href="<?php echo url('assets/css/style.css'); ?>?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta name="csrf-token" content="<?php echo $csrfToken; ?>">
 </head>
@@ -38,15 +38,16 @@ $csrfToken = generateCsrfToken();
                 </a>
 
                 <!-- Search Bar -->
-                <div class="search-bar">
+                <form action="catalog.php" method="GET" class="search-bar" style="margin: 0;">
                     <i class="fas fa-search search-icon"></i>
                     <input 
                         type="text" 
+                        name="search"
                         class="search-input" 
                         placeholder="<?php echo t('search_placeholder'); ?>"
                         id="searchInput"
                     >
-                </div>
+                </form>
 
                 <!-- Header Actions -->
                 <div class="header-actions">

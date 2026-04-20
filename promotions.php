@@ -14,7 +14,7 @@ $hotDeals = getProducts(null, 24, true); // true = только hot deals
     <!-- Header -->
     <div style="text-align: center; margin-bottom: 40px;">
         <h1 style="font-size: 42px; margin-bottom: 16px;">
-            🔥 <?php echo t('all_hot_deals'); ?>
+            <i class="fas fa-fire" style="color: #ff4500;"></i> <?php echo t('all_hot_deals'); ?>
         </h1>
         <p style="font-size: 18px; color: var(--color-gray);">
             <?php echo t('hot_deals_subtitle'); ?>

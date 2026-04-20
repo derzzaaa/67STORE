@@ -5,6 +5,10 @@
 db_data/
 mysql_data/
 *.sql.gz
+/backups/
+
+# Logs
+*.log
 
 # IDE / Editor
 .idea/

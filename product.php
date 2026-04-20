@@ -21,7 +21,7 @@ if (!$product) {
     $pageTitle = '404 - Not Found';
     require_once 'includes/header.php';
     echo '<div class="container" style="text-align:center; padding: 80px 20px;">
-        <h1 style="font-size: 48px;">🚫</h1>
+        <h1 style="font-size: 48px;"><i class="fas fa-ban" style="color: var(--color-gray);"></i></h1>
         <h2>Product not found</h2>
         <a href="catalog.php" class="btn-checkout" style="display:inline-block; margin-top:24px;">Back to Catalog</a>
     </div>';
@@ -62,7 +62,7 @@ require_once 'includes/header.php';
         <div style="position: sticky; top: 80px;">
             <div style="background: #FAFAFA; border-radius: 20px; padding: 32px; border: 2px solid #C8C8C8; text-align: center; position: relative; overflow: hidden;">
                 <?php if ($product['is_hot_deal']): ?>
-                    <div style="position: absolute; top: 16px; left: 16px; background: var(--color-primary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">🔥 HOT DEAL</div>
+                    <div style="position: absolute; top: 16px; left: 16px; background: var(--color-primary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;"><i class="fas fa-fire"></i> HOT DEAL</div>
                 <?php endif; ?>
                 <?php if ($product['discount_percent']): ?>
                     <div style="position: absolute; top: 16px; right: 16px; background: #FFC107; color: #333; padding: 4px 10px; border-radius: 20px; font-size: 13px; font-weight: 700;">-<?php echo $product['discount_percent']; ?>%</div>
@@ -228,7 +228,7 @@ require_once 'includes/header.php';
     <?php if ($related): ?>
         <div style="margin-top: 60px;">
             <h2 style="font-size: 26px; font-weight: 700; margin-bottom: 24px;">
-                <span style="color: var(--color-primary);">🛒</span> You May Also Like
+                <span style="color: var(--color-primary);"><i class="fas fa-shopping-cart"></i></span> You May Also Like
             </h2>
             <div class="products-grid">
                 <?php foreach ($related as $rel): ?>

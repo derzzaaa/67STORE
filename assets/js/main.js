@@ -115,6 +115,35 @@ async function removeFromCart(productId) {
     }
 }
 
+// Clear cart
+async function clearCart() {
+    if (!confirm('Are you sure you want to clear your cart?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch('api/clear-cart.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify({ csrf_token: getCsrfToken() })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            window.location.reload();
+        } else {
+            showToast(data.message || 'Failed to clear cart', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('An error occurred', 'error');
+    }
+}
+
 // Apply promo code
 async function applyPromoCode() {
     const promoInput = document.getElementById('promoCode');
@@ -177,38 +206,14 @@ if (document.querySelectorAll('[data-end-time]').length > 0) {
     setInterval(updateTimers, 1000);
 }
 
-// Search functionality — с rate limiting (debounce 300ms)
+// Search functionality — removed client side search for demo purposes
 const searchInput = document.getElementById('searchInput');
 if (searchInput) {
-    let searchTimer = null;
-    let searchCount = 0;
-    let searchWindowStart = Date.now();
-    const SEARCH_LIMIT = 30; // макс. 30 поисков в минуту
-
-    searchInput.addEventListener('input', (e) => {
-        clearTimeout(searchTimer);
-        searchTimer = setTimeout(() => {
-            // Rate limit на клиенте
-            const now = Date.now();
-            if (now - searchWindowStart > 60000) {
-                searchCount = 0;
-                searchWindowStart = now;
-            }
-            searchCount++;
-            if (searchCount > SEARCH_LIMIT) {
-                return; // Тихо игнорируем (серверный rate limit сделает остальное)
-            }
-
-            const query = e.target.value.toLowerCase().trim();
-            const products = document.querySelectorAll('.product-card');
-
-            products.forEach(product => {
-                const nameEl = product.querySelector('.product-name');
-                if (!nameEl) return;
-                const name = nameEl.textContent.toLowerCase();
-                product.style.display = name.includes(query) ? 'block' : 'none';
-            });
-        }, 300); // debounce 300ms
+    // Allows normal form submission on Enter
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            this.closest('form').submit();
+        }
     });
 }
 

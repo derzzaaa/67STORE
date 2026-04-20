@@ -14,35 +14,39 @@ $allProducts = getProducts(null, 12); // Все товары
 ?>
 
 <!-- Hero Banner -->
-<section class="promo-banner">
-    <div class="promo-content">
-        <h2>
-            <?php echo t('promo_take'); ?> <span class="promo-highlight"><?php echo t('promo_off'); ?></span><br>
-            <?php echo t('promo_your_first_order'); ?>
-        </h2>
-        <p class="promo-subtitle">
-            <?php echo t('promo_use_code'); ?> <span class="promo-code-inline">FRESH7</span> <?php echo t('promo_subtitle_text'); ?>
-        </p>
+<section class="promo-banner-section">
+    <div class="container">
+        <div class="promo-banner">
+            <div class="promo-content">
+                <h2>
+                    <?php echo t('promo_take'); ?> <span class="promo-highlight"><?php echo t('promo_off'); ?></span><br>
+                    <?php echo t('promo_your_first_order'); ?>
+                </h2>
+                <p class="promo-subtitle">
+                    <?php echo t('promo_use_code'); ?> <span class="promo-code-inline">FRESH7</span> <?php echo t('promo_subtitle_text'); ?>
+                </p>
 
-        <!-- Countdown -->
-        <div class="banner-countdown">
-            <div class="banner-countdown-unit">
-                <span class="num" id="bc-h">00</span>
-                <span class="lbl">Hours</span>
-            </div>
-            <div class="banner-countdown-unit">
-                <span class="num" id="bc-m">00</span>
-                <span class="lbl">Mins</span>
-            </div>
-            <div class="banner-countdown-unit">
-                <span class="num" id="bc-s">00</span>
-                <span class="lbl">Secs</span>
+                <!-- Countdown -->
+                <div class="banner-countdown">
+                    <div class="banner-countdown-unit">
+                        <span class="num" id="bc-h">00</span>
+                        <span class="lbl">Hours</span>
+                    </div>
+                    <div class="banner-countdown-unit">
+                        <span class="num" id="bc-m">00</span>
+                        <span class="lbl">Mins</span>
+                    </div>
+                    <div class="banner-countdown-unit">
+                        <span class="num" id="bc-s">00</span>
+                        <span class="lbl">Secs</span>
+                    </div>
+                </div>
+
+                <a href="<?php echo url('promotions.php'); ?>" class="btn-claim">
+                    <?php echo t('promo_claim'); ?>
+                </a>
             </div>
         </div>
-
-        <a href="<?php echo url('promotions.php'); ?>" class="btn-claim">
-            <?php echo t('promo_claim'); ?>
-        </a>
     </div>
 </section>
 
@@ -66,20 +70,20 @@ $allProducts = getProducts(null, 12); // Все товары
         <h3 class="categories-title"><?php echo t('quick_categories'); ?></h3>
         <div class="categories-grid">
             <a href="<?php echo url('catalog.php'); ?>" class="category-item">
-                <div class="category-icon-wrap">&#128722;</div>
+                <div class="category-icon-wrap"><i class="fas fa-shopping-bag"></i></div>
                 <span class="category-name"><?php echo t('cat_all'); ?></span>
             </a>
             <?php
             $catIcons = [
-                'hot-deals'    => '&#128293;',  // 🔥
-                'beverages'    => '&#129381;',  // 🧃
-                'snacks'       => '&#127871;',  // 🍿
-                'fresh-food'   => '&#127828;',  // 🍔
-                'frozen-treats'=> '&#127846;',  // 🍦
-                'essentials'   => '&#129524;',  // 🧴
+                'hot-deals'    => '<i class="fas fa-fire"></i>',
+                'beverages'    => '<i class="fas fa-mug-hot"></i>',
+                'snacks'       => '<i class="fas fa-cookie-bite"></i>',
+                'fresh-food'   => '<i class="fas fa-hamburger"></i>',
+                'frozen-treats' => '<i class="fas fa-ice-cream"></i>',
+                'essentials'   => '<i class="fas fa-shopping-basket"></i>',
             ];
             foreach ($categories as $category):
-                $icon = $catIcons[$category['slug']] ?? '&#128230;';
+                $icon = $catIcons[$category['slug']] ?? '<i class="fas fa-box"></i>';
             ?>
                 <a href="<?php echo url('catalog.php?category=' . $category['slug']); ?>" class="category-item">
                     <div class="category-icon-wrap"><?php echo $icon; ?></div>
@@ -95,7 +99,7 @@ $allProducts = getProducts(null, 12); // Все товары
 <section class="products-section">
     <div class="container">
         <div class="section-header">
-            <h2 class="section-title">🔥 <?php echo t('all_hot_deals'); ?></h2>
+            <h2 class="section-title"><i class="fas fa-fire" style="color: #ff4500;"></i> <?php echo t('all_hot_deals'); ?></h2>
         </div>
 
         <div class="products-grid">
